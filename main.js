@@ -1,108 +1,118 @@
 
-const hajmlar = document.querySelectorAll(".hajm");
-const son = document.querySelector("#son");
-const miqdor = document.querySelector("#miqdor");
-const hajm = document.querySelector("#hajm");
-const bir = document.querySelector("#bir");
-const jami = document.querySelector("#jami");
-const jamiSon = document.querySelector("#jamiSon");
-const chegirma = document.querySelector("#chegirma");
-const tanlovlar = document.querySelectorAll(".tanlov");
-const qosh = document.querySelector("#qosh");
-const xabar = document.querySelector("#xabar");
+const bikes = [
+  { name: "Mountain Bike X1", price: 799, old: 999, discount: 20, image: "photo-1576435728678-68d0fbf94e91" },
+  { name: "Road Bike R2", price: 1099, old: 1299, discount: 15, image: "photo-1532298229144-0ec0c57515c7" },
+  { name: "Trail Bike T3", price: 749, old: 999, discount: 25, image: "photo-1544191696-102dbdaeeaa0" },
+  { name: "Sport Bike F1", price: 449, old: 549, discount: 18, image: "photo-1511994298241-608e28f14fde" },
+  { name: "Racing Bike C1", price: 349, old: 419, discount: 17, image: "photo-1485965120184-e220f721d03e" },
+  { name: "Hybrid Bike H1", price: 599, old: 769, discount: 22, image: "photo-1507035895480-2b3156c31fc8" },
+  { name: "Electric Bike E1", price: 1299, old: 1599, discount: 19, image: "photo-1571068316344-75bc76f77890" },
+  { name: "Mountain Bike X2", price: 849, old: 1009, discount: 16, image: "photo-1596495577886-d920f1fb7238" },
+  { name: "Road Bike P1", price: 949, old: 1199, discount: 21, image: "photo-1532298229144-0ec0c57515c7" },
+  { name: "Trail Bike T1", price: 699, old: 809, discount: 14, image: "photo-1576435728678-68d0fbf94e91" },
+  { name: "Fat Bike F2", price: 899, old: 1169, discount: 23, image: "photo-1544191696-102dbdaeeaa0" },
+  { name: "Sport Bike S1", price: 549, old: 649, discount: 15, image: "photo-1511994298241-608e28f14fde" },
+  { name: "Adventure Bike A1", price: 1199, old: 1499, discount: 20, image: "photo-1507035895480-2b3156c31fc8" },
+  { name: "Speed Bike S2", price: 999, old: 1249, discount: 20, image: "photo-1532298229144-0ec0c57515c7" },
+  { name: "Pro Mountain M1", price: 1399, old: 1699, discount: 18, image: "photo-1576435728678-68d0fbf94e91" },
+  { name: "Urban Bike U1", price: 399, old: 499, discount: 20, image: "photo-1485965120184-e220f721d03e" },
+];
 
-const narxlar = {
-    "0.5": 0.075,
-    "1": 0.095,
-    "1.5": 0.12,
-    "5": 0.35,
-    "0.75": 0.11
-};
+const grid = document.getElementById("products-grid");
+const search = document.getElementById("search");
+const empty = document.getElementById("empty");
+const cartCount = document.getElementById("cart-count");
 
-const nomlar = {
-    "0.5": "0.5 Liter",
-    "1": "1.0 Liter",
-    "1.5": "1.5 Liter",
-    "5": "5.0 Liter",
-    "0.75": "Eco 0.75L"
-};
+let cart = 0;
 
-let tanlangan = "0.5";
+function showBikes(list) {
+    grid.innerHTML = "";
 
-function formatSon(qiymat) {
-    return new Intl.NumberFormat("en-US").format(qiymat).replace(/,/g, " ");
-}
+    empty.style.display = list.length ? "none" : "block";
 
-function formatPul(qiymat) {
-    return "$" + qiymat.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+    list.forEach((bike, index) => {
+        const card = document.createElement("div");
+        card.className = "product";
+
+        card.innerHTML = `
+            <span class="discount">-${bike.discount}%</span>
+
+            <div class="product-image">
+                <img src="https://images.unsplash.com/${bike.image}?auto=format&fit=crop&w=700&q=85" alt="${bike.name}">
+            </div>
+
+            <div class="product-info">
+                <h3>${bike.name}</h3>
+
+                <div class="rating">
+                    ★★★★★ <small>4.9 (${120 + index * 13})</small>
+                </div>
+
+                <div class="product-bottom">
+                    <div>
+                        <span class="price">$${bike.price.toLocaleString("en-US")}</span>
+                        <span class="old-price">$${bike.old.toLocaleString("en-US")}</span>
+                    </div>
+
+                    <button class="add-cart" data-index="${index}">
+                        <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
+
+        grid.appendChild(card);
     });
 }
 
-function hisobla() {
-    const dona = Number(son.value);
-    const asosiy = narxlar[tanlangan];
-    let xizmatNarxi = 0;
+showBikes(bikes);
 
-    tanlovlar.forEach(input => {
-        if (input.checked) {
-            xizmatNarxi += Number(input.dataset.price);
-        }
-    });
+grid.addEventListener("click", function (e) {
+    const button = e.target.closest(".add-cart");
 
-    let foiz = 0;
+    if (button) {
+        cart++;
+        cartCount.textContent = cart;
 
-    if (dona >= 100000) {
-        foiz = 15;
-    } else if (dona >= 50000) {
-        foiz = 12;
-    } else if (dona >= 20000) {
-        foiz = 10;
-    } else if (dona >= 5000) {
-        foiz = 5;
+        button.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+        button.style.background = "#fff";
+        button.style.color = "#ed001b";
+
+        setTimeout(() => {
+            button.innerHTML = '<i class="fa-solid fa-cart-shopping"></i> Add to Cart';
+            button.style.background = "";
+            button.style.color = "";
+        }, 1200);
     }
+});
 
-    const donaNarxi = asosiy + xizmatNarxi;
-    const umumiy = dona * donaNarxi * (1 - foiz / 100);
+search.addEventListener("input", function () {
+    const value = this.value.toLowerCase();
 
-    miqdor.textContent = formatSon(dona) + " dona";
-    hajm.textContent = nomlar[tanlangan];
-    bir.textContent = formatPul(donaNarxi);
-    jami.textContent = formatPul(umumiy);
-    jamiSon.textContent = formatSon(dona) + " dona";
-    chegirma.textContent = foiz + "% chegirma";
+    const filtered = bikes.filter(bike =>
+        bike.name.toLowerCase().includes(value)
+    );
 
-    son.style.background = `linear-gradient(to right, #0ea5e9 ${((dona - 1000) / 99000) * 100}%, #344258 ${((dona - 1000) / 99000) * 100}%)`;
-}
+    showBikes(filtered);
+});
 
-hajmlar.forEach(btn => {
-    btn.addEventListener("click", () => {
-        hajmlar.forEach(item => item.classList.remove("faol"));
-        btn.classList.add("faol");
-        tanlangan = btn.dataset.size;
-        xabar.textContent = "";
-        hisobla();
+const menu = document.getElementById("menu");
+const nav = document.getElementById("nav");
+
+menu.addEventListener("click", () => {
+    nav.classList.toggle("show");
+});
+
+nav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+        nav.classList.remove("show");
     });
 });
 
-son.addEventListener("input", () => {
-    xabar.textContent = "";
-    hisobla();
+document.getElementById("newsletter-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    alert("Thank you for subscribing to BikePro!");
+
+    this.reset();
 });
-
-tanlovlar.forEach(input => {
-    input.addEventListener("change", () => {
-        xabar.textContent = "";
-        hisobla();
-    });
-});
-
-qosh.addEventListener("click", () => {
-    const dona = formatSon(Number(son.value));
-    const narx = jami.textContent;
-
-    xabar.textContent = `${dona} dona ${nomlar[tanlangan]} savatga qo‘shishga tayyor. Jami: ${narx}`;
-});
-
-hisobla();
